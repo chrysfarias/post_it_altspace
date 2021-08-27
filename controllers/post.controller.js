@@ -22,7 +22,7 @@ exports.create = function (req, res) {
             return console.log(err);
         }
     });
-    res.send(post).sendStatus(200);
+    res.send(post);
 };
 
 exports.getAll = function  (req, res) {
