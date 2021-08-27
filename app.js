@@ -6,8 +6,8 @@ const app = express()
 const port = process.env.PORT || 3000;
 const routes = require('./routes/api.routes');
 
-if (!fs.existsSync("/postits")){
-  fs.mkdirSync("/postits");
+if (!fs.existsSync("postits")){
+  fs.mkdirSync("postits");
 }
 
 app.use(express.static('public'));
