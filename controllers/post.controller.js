@@ -25,7 +25,6 @@ exports.create = function (req, res) {
 
     fs.writeFile(path, JSON.stringify(post), function (err) {
         if (err) {
-            res.sendStatus(500);
             return console.log(err);
         }
     });
