@@ -1,4 +1,4 @@
-const api = "http://localhost:3000/api";
+const api = "https://postitaltspace.herokuapp.com/api";
 
 var postits = []
 var canvas = document.getElementById("myCanvas");
