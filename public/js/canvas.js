@@ -32,18 +32,30 @@ canvas.onmousedown = myDown;
 canvas.onmouseup = myUp;
 canvas.onmousemove = myMove;
 
-//load trash image
-trash.image.src = 'bin.png';
-loadPosts();
-// get saved post-its
-setInterval(loadPosts, 5000);
+function start()
+{
+    const params = new URLSearchParams(window.location.search);
+    if (!params.has("section"))
+    {
+        alert("Section not found!!");
+        return;
+    }
+    //load trash image
+    trash.image.src = 'bin.png';
+    loadPosts();
+    // get saved post-its
+    setInterval(loadPosts, 5000);
+}
 
 async function loadPosts()
 {
+    const params = new URLSearchParams(window.location.search);
+    const section = params.get("section");
+
     if (dragok)
         return;
 
-    const rawResponse = await fetch(`${api}/post`, {
+    const rawResponse = await fetch(`${api}/${section}/post`, {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
@@ -108,7 +120,9 @@ async function createPost(text, color)
         color: color
     }
 
-    const rawResponse = await fetch(`${api}/post`, {
+    const params = new URLSearchParams(window.location.search);
+    const section = params.get("section");
+    const rawResponse = await fetch(`${api}/${section}/post`, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -176,7 +190,9 @@ async function myUp(e) {
 }
 
 async function updatePost(post) {
-    const rawResponse = await fetch(`${api}/post/${post.id}`, {
+    const params = new URLSearchParams(window.location.search);
+    const section = params.get("section");
+    const rawResponse = await fetch(`${api}/${section}/post/${post.id}`, {
         method: 'PUT',
         headers: {
             'Accept': 'application/json',
@@ -188,7 +204,9 @@ async function updatePost(post) {
 }
 
 async function deletePost(post) {
-    const rawResponse = await fetch(`${api}/post/${post.id}`, {
+    const params = new URLSearchParams(window.location.search);
+    const section = params.get("section");
+    const rawResponse = await fetch(`${api}/${section}/post/${post.id}`, {
         method: 'DELETE',
         headers: {
             'Accept': 'application/json',
