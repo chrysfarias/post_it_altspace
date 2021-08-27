@@ -43,7 +43,7 @@ exports.getAll = function  (req, res) {
     console.log(files)
     for(var i=0; i<files.length; i++)
     {
-        let dir = "postits/" + files[i];
+        let dir = "postits/" +section +"/" + files[i];
         if (fs.existsSync(dir))
         {
             let rawdata = fs.readFileSync();
