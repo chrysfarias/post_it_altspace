@@ -31,6 +31,7 @@ trash.image.addEventListener('load', function(){
 canvas.onmousedown = myDown;
 canvas.onmouseup = myUp;
 canvas.onmousemove = myMove;
+start();
 
 function start()
 {
@@ -55,7 +56,7 @@ async function loadPosts()
     if (dragok)
         return;
 
-    const rawResponse = await fetch(`${api}/${section}/post`, {
+    const rawResponse = await fetch(`${api}/post?section=${section}`, {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
@@ -122,7 +123,7 @@ async function createPost(text, color)
 
     const params = new URLSearchParams(window.location.search);
     const section = params.get("section");
-    const rawResponse = await fetch(`${api}/${section}/post`, {
+    const rawResponse = await fetch(`${api}/post?section=${section}`, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -192,7 +193,7 @@ async function myUp(e) {
 async function updatePost(post) {
     const params = new URLSearchParams(window.location.search);
     const section = params.get("section");
-    const rawResponse = await fetch(`${api}/${section}/post/${post.id}`, {
+    const rawResponse = await fetch(`${api}/post/${post.id}?section=${section}`, {
         method: 'PUT',
         headers: {
             'Accept': 'application/json',
@@ -206,7 +207,7 @@ async function updatePost(post) {
 async function deletePost(post) {
     const params = new URLSearchParams(window.location.search);
     const section = params.get("section");
-    const rawResponse = await fetch(`${api}/${section}/post/${post.id}`, {
+    const rawResponse = await fetch(`${api}/post/${post.id}?section=${section}`, {
         method: 'DELETE',
         headers: {
             'Accept': 'application/json',
