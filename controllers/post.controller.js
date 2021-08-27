@@ -28,9 +28,10 @@ exports.create = function (req, res) {
 exports.getAll = function  (req, res) {
     var files = fs.readdirSync("postits");
     let postits = [];
+    console.log(files)
     for(var i=0; i<files.length; i++)
     {
-        let dir = "postits\\" + files[i];
+        let dir = "postits/" + files[i];
         if (fs.existsSync(dir))
         {
             let rawdata = fs.readFileSync();
