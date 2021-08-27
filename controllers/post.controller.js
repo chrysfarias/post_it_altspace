@@ -19,7 +19,7 @@ exports.create = function (req, res) {
         fs.mkdirSync(dir);
     }
 
-    const path = `dir/${id}.json`
+    const path = `${dir}/${id}.json`
 
     post.id = id;
 
