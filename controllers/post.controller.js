@@ -40,13 +40,12 @@ exports.getAll = function  (req, res) {
     }
     var files = fs.readdirSync("postits/" + section);
     let postits = [];
-    console.log(files)
     for(var i=0; i<files.length; i++)
     {
         let dir = "postits/" +section +"/" + files[i];
         if (fs.existsSync(dir))
         {
-            let rawdata = fs.readFileSync();
+            let rawdata = fs.readFileSync(dir);
             let json = JSON.parse(rawdata);
             postits.push(json);
         }
