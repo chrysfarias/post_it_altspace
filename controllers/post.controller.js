@@ -30,9 +30,13 @@ exports.getAll = function  (req, res) {
     let postits = [];
     for(var i=0; i<files.length; i++)
     {
-        let rawdata = fs.readFileSync("postits\\" + files[i]);
-        let json = JSON.parse(rawdata);
-        postits.push(json);
+        let dir = "postits\\" + files[i];
+        if (fs.existsSync(dir))
+        {
+            let rawdata = fs.readFileSync();
+            let json = JSON.parse(rawdata);
+            postits.push(json);
+        }
     }
     res.send(postits);
 };
