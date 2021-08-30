@@ -1,38 +1,65 @@
 const api = "https://postitaltspace.herokuapp.com/api";
 //const api = "http://localhost:3000/api";
+const colors = ["#1abc9c", "#2ecc71", "#3498db", "#9b59b6", "#34495e", "#f1c40f", "#e67e22", "#e74c3c"]
 
 var postits = []
-var canvas = document.getElementById("myCanvas");
-var ctx = canvas.getContext("2d");
-var BB = canvas.getBoundingClientRect();
-var offsetX = BB.left;
-var offsetY = BB.top;
-var WIDTH = canvas.width;
-var HEIGHT = canvas.height;
-var currentColor = 0;
+var selectedPost = null;
+var insertPostInputField = null;
 
-// drag related variables
-var dragok = false;
-var startX;
-var startY;
-
-const trash = {
-    width: 25,
-    height: 25,
-    posX: WIDTH - 70,
-    posY: HEIGHT - 70, 
-    image: new Image,
-    loaded: false
-}
-trash.image.addEventListener('load', function(){
-    trash.loaded = true;
+jQuery(document).ready(function($){
+    start();
+    $("body").click(function(e) {
+        if (e.target.nodeName === "BODY")
+            cancelAdd();
+    });
+    $("body").dblclick(addInput);
 });
 
-// listen for mouse events
-canvas.onmousedown = myDown;
-canvas.onmouseup = myUp;
-canvas.onmousemove = myMove;
-start();
+function addInput(e)
+{
+    var x = e.pageX - this.offsetLeft;
+    var y = e.pageY - this.offsetTop;
+    cancelAdd();
+    insertPostInputField = $('<div/>',{
+        class: 'input-post'
+    }).appendTo('body')
+    insertPostInputField.css({top: y, left: x});
+    insertPostInputField.draggable();
+
+    var inputField = $('<textarea/>', {
+
+    }).appendTo(insertPostInputField);
+    inputField.focus();
+
+    var addButton = $('<button/>', {
+        text: 'Criar'
+    }).appendTo(insertPostInputField);
+    addButton.click(function(e) {
+        createPost(inputField.val(), 
+            insertPostInputField.css( "background-color" ),
+            x,
+            y
+            );
+    })
+    var buttons = $('<div/>', {}).appendTo(insertPostInputField);
+
+    colors.forEach(color => {
+        var button = $('<button/>', {
+            
+        }).appendTo(buttons);
+        button.css("background-color", color);
+        button.click(function(e){
+            insertPostInputField.css("background-color", color);
+        });
+    });
+}
+
+function cancelAdd()
+{
+    insertPostInputField?.remove();
+    selectedPost?.element.removeClass('selected')
+    selectedPost = null
+}
 
 function start()
 {
@@ -43,19 +70,16 @@ function start()
         return;
     }
     //load trash image
-    trash.image.src = 'bin.png';
     loadPosts();
     // get saved post-its
-    setInterval(loadPosts, 5000);
+    //setInterval(loadPosts, 5000);
 }
 
 async function loadPosts()
 {
+    clear();
     const params = new URLSearchParams(window.location.search);
     const section = params.get("section");
-
-    if (dragok)
-        return;
 
     const rawResponse = await fetch(`${api}/post?section=${section}`, {
         method: 'GET',
@@ -68,52 +92,55 @@ async function loadPosts()
     postits = content;
     draw();
 }
-
-// draw a single rect
-function rect(post) {
-    ctx.fillStyle = post.color;
-    ctx.beginPath();
-    ctx.rect(post.position.x, post.position.y, post.size.x, post.size.y);
-    ctx.closePath();
-    ctx.fill();
-
-    ctx.fillStyle = "#fff";
-    ctx.font = "12px Arial";
-    ctx.fillText(post.text, post.position.x + 5, post.position.y + 25);
-}
-
-// clear the canvas
 function clear() {
-    ctx.clearRect(0, 0, WIDTH, HEIGHT);
+    postits?.forEach(p => p.element?.remove());
 }
 
 // redraw the scene
 function draw() {
-    clear();
-    ctx.fillStyle = "#FAF7F8";
-    ctx.beginPath();
-    ctx.rect(0, 0, WIDTH, HEIGHT);
-    ctx.closePath();
-    ctx.fill();
     // redraw each rect in the rects[] array
     for (var i = 0; i < postits.length; i++) {
-        var r = postits[i];
-        rect(r);
+        const r = postits[i];
+        r.element = $('<div/>',{
+            text: r.text,
+            class: 'postit'
+        }).appendTo('body')
+        r.element.attr("tabindex", 0);
+        r.element.draggable();
+        r.element.css('background-color', r.color);
+        r.element.css('width', r.size.x);
+        r.element.css('height', r.size.y);
+        r.element.css('left', r.position.x);
+        r.element.css('top', r.position.y);
+        r.element.on('dragstop', function(e) { updatePost(r); })
+        r.element.on('click', function(e) {
+            cancelAdd();
+            selectedPost?.element.removeClass('selected')
+            selectedPost = r;
+            selectedPost.element.addClass('selected');
+            selectedPost.element.focus();
+        });
+        r.element.on('keydown', function(e) {
+            const key = e.which || e.keyCode;
+            if (selectedPost != r)
+                return;
+            if (key === 46) {
+                selectedPost = null;
+                deletePost(r);
+            }
+        });
+        postits[i] = r;
     }
-
-    //draw trash
-    if (trash.loaded)
-        ctx.drawImage(trash.image, trash.posX, trash.posY, trash.width, trash.height);
 }
 
 
-async function createPost(text, color)
+async function createPost(text, color, x, y)
 {
     var post = {
         text: text,
         position: {
-            x: 0,
-            y: 0
+            x,
+            y
         },
         size: {
             x: 85,
@@ -135,65 +162,18 @@ async function createPost(text, color)
     const content = await rawResponse.json();
     postits.push(content);
     console.log("Adicionado!");
-
+    cancelAdd();
+    clear();
     draw();
 }
-
-// handle mousedown events
-function myDown(e) {
-
-    // tell the browser we're handling this mouse event
-    e.preventDefault();
-    e.stopPropagation();
-
-    // get the current mouse position
-    var mx = parseInt(e.clientX - offsetX);
-    var my = parseInt(e.clientY - offsetY);
-
-    // test each rect to see if mouse is inside
-    dragok = false;
-    for (var i = postits.length -1; i >= 0; i--) {
-        var r = postits[i];
-        if (mx > r.position.x && mx < r.position.x + r.size.x && my > r.position.y && my < r.position.y + r.size.y) {
-            // if yes, set that rects isDragging=true
-            dragok = true;
-            r.isDragging = true;
-            postits.push(postits.splice(postits.indexOf(i), 1)[0]);
-            break;
-        }
-    }
-    // save the current mouse position
-    startX = mx;
-    startY = my;
-}
-
-// handle mouseup events
-async function myUp(e) {  
-    // tell the browser we're handling this mouse event
-    e.preventDefault();
-    e.stopPropagation();
-
-    // clear all the dragging flags
-    dragok = false;
-    for (var i = 0; i < postits.length; i++) {
-        if (postits[i].isDragging)
-        {
-            postits[i].isDragging = false;
-            if (postits[i].position.x > trash.posX && postits[i].position.y > trash.posY) //Delete
-            {
-                deletePost(postits[i]);
-            }
-            else //Update
-            {
-                updatePost(postits[i]);
-            }
-        }
-    }
-}
-
 async function updatePost(post) {
     const params = new URLSearchParams(window.location.search);
     const section = params.get("section");
+    const position = post.element.position();
+    post.position = {
+        x: position.left,
+        y: position.top
+    }
     const rawResponse = await fetch(`${api}/post/${post.id}?section=${section}`, {
         method: 'PUT',
         headers: {
@@ -215,48 +195,14 @@ async function deletePost(post) {
             'Content-Type': 'application/json'
         }
     });
+    const index = postits.indexOf(post);
+    postits.splice(index, 1);
+    post.element.remove();
     console.log("Deletado!");
+    clear();
     draw();
 }
 
-// handle mouse moves
-function myMove(e) {
-    // if we're dragging anything...
-    if (dragok) {
-
-        // tell the browser we're handling this mouse event
-        e.preventDefault();
-        e.stopPropagation();
-
-        // get the current mouse position
-        var mx = parseInt(e.clientX - offsetX);
-        var my = parseInt(e.clientY - offsetY);
-
-        // calculate the distance the mouse has moved
-        // since the last mousemove
-        var dx = mx - startX;
-        var dy = my - startY;
-
-        // move each rect that isDragging 
-        // by the distance the mouse has moved
-        // since the last mousemove
-        for (var i = 0; i < postits.length; i++) {
-            var r = postits[i];
-            if (r.isDragging) {
-                r.position.x += dx;
-                r.position.y += dy;
-            }
-        }
-
-        // redraw the scene with the new rect positions
-        draw();
-
-        // reset the starting mouse position for the next mousemove
-        startX = mx;
-        startY = my;
-
-    }
-}
 
 function uuidv4() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {

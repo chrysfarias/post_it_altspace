@@ -1,0 +1,93 @@
+body {
+    perspective: 150px;
+    width: 100vw;
+    height: 100vh;
+}
+.postit {
+    padding: 10px;
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 4px;
+    color: #fff;
+    font-family: cursive;
+    cursor: pointer;
+    transform: scale(1);
+    transition: opacity ease .4s, all ease-out .1s, transform ease .4s;
+    transform-style: preserve-3d;
+    user-select: none;
+}
+.postit:hover {
+    transition: opacity ease .2s;
+    opacity: .8;
+}
+.postit:active {
+    transform: scale(.9);
+    opacity: 1;
+    transition: opacity ease .2, all ease-out .1s, transform ease .2s;
+}
+.postit:after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: -6px;
+    bottom: -6px;
+    left: -6px;
+    right: -6px;
+    border-radius: 10px;
+    border: 0;
+    opacity: 0;
+    transition: all ease .4s;
+}
+.selected:after {
+    opacity: 1;
+    border: 3px solid #0080ff;
+    transition: all ease .1s;
+}
+.input-post {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    border-radius: 4px;
+    padding: 10px;
+    box-sizing: border-box;
+    background-color: #3498db;
+}
+.input-post > textarea {
+    border: none;
+    background: none;
+    outline: none;
+    color: #fff;
+    font-family: cursive;
+}
+.input-post > button {
+    position: absolute;
+    bottom: -50px;
+    left: 0;
+    width: 80px;
+    border: none;
+    outline: none;
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #2ecc71;
+}
+.input-post > div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 150px;
+    position: absolute;
+    top: -80px;
+    padding: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+.input-post > div > button {
+    width: 20px;
+    margin: 2px;
+    height: 20px;
+    border: none;
+    cursor: pointer;
+}

@@ -4,36 +4,23 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Post-it</title>
-    <style>
-        .postit-canvas {
-            border: 2px solid #5d5d5d;
-        }
-    </style>
+    <title>Altspace Post-it Editor</title>
+    <link rel="stylesheet" href="css/resetstyle.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <h1>Post-it editor</h1>
-    <canvas id="myCanvas" width="1000" height="500" class="postit-canvas">
-
-    </canvas>
-    
-    <h3>New Post-it</h3>
-    <label for="head">Color</label>
-    <input type="color" id="colorPicker" name="head" value="#e66465">
-    <br/>
-    <label for="Text1">Text</label>
-    <textarea id="text" name="Text1" style="font-size: 20px; width: 150px; height: 150; white-space: nowrap;" cols="40" rows="5"></textarea>
-    <br/>
-    <button id="addButton">Add</button>
-
-    <script src="js/canvas.js"></script>
+    <header>
+        <img src="postit.png"/>
+        <h1>Altspace Post-it Editor</h1>
+    </header>
+    <div class="canvas-container">
+        <iframe id="canvas" src="canvas"></iframe>
+    </div>
     <script>
-        document.getElementById("addButton").onclick = function () 
-        {
-            var text = document.getElementById("text").value;
-            var color = document.getElementById("colorPicker").value;
-            createPost(text, color);
-        }    
+        var loc = window.location.toString(),
+        params = loc.split('?')[1],
+        iframe = document.getElementById('canvas');
+        iframe.src = iframe.src + '?' + params;
     </script>
 </body>
 </html>

@@ -23,6 +23,9 @@ app.use('/api', routes);
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname+'/pages/index.html'));
 });
+app.get('/canvas', (req, res) => {
+    res.sendFile(path.join(__dirname+'/pages/canvas.html'));
+});
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
