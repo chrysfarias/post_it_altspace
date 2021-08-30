@@ -40,14 +40,9 @@ function addInput(e)
     var addButton = $('<button/>', {
         text: 'Criar'
     }).appendTo(insertPostInputField);
-    var color = rgb2hex(insertPostInputField.css( "background-color" ));
-    console.log(color);
     addButton.click(function(e) {
-        createPost(inputField.val(), 
-            color,
-            x,
-            y
-            );
+        var color = rgb2hex(insertPostInputField.css( "background-color" ));
+        createPost(inputField.val(), color, x, y);
     })
     var buttons = $('<div/>', {}).appendTo(insertPostInputField);
 
