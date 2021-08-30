@@ -14,6 +14,7 @@ jQuery(document).ready(function($){
     });
     $("body").dblclick(addInput);
 });
+const rgb2hex = (rgb) => `#${rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/).slice(1).map(n => parseInt(n, 10).toString(16).padStart(2, '0')).join('')}`
 
 function addInput(e)
 {
@@ -34,9 +35,10 @@ function addInput(e)
     var addButton = $('<button/>', {
         text: 'Criar'
     }).appendTo(insertPostInputField);
+    var color = rgb2hex(insertPostInputField.css( "background-color" ));
     addButton.click(function(e) {
         createPost(inputField.val(), 
-            insertPostInputField.css( "background-color" ),
+            color,
             x,
             y
             );
