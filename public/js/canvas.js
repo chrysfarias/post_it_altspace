@@ -14,8 +14,10 @@ jQuery(document).ready(function($){
     });
     $("body").dblclick(addInput);
 });
-const rgb2hex = (rgb) => `#${rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/).slice(1).map(n => parseInt(n, 10).toString(16).padStart(2, '0')).join('')}`
-
+function rgb2hex(rgb) {
+ rgb = rgb.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(,\s*\d+\.*\d+)?\)$/);
+ return "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
+}
 function addInput(e)
 {
     var x = e.pageX - this.offsetLeft;
@@ -36,6 +38,7 @@ function addInput(e)
         text: 'Criar'
     }).appendTo(insertPostInputField);
     var color = rgb2hex(insertPostInputField.css( "background-color" ));
+    console.log(color);
     addButton.click(function(e) {
         createPost(inputField.val(), 
             color,
