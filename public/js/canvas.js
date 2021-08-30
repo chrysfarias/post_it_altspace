@@ -1,4 +1,5 @@
 const api = "https://postitaltspace.herokuapp.com/api";
+//const api = "http://localhost:3000/api";
 
 var postits = []
 var canvas = document.getElementById("myCanvas");
@@ -77,7 +78,7 @@ function rect(post) {
     ctx.fill();
 
     ctx.fillStyle = "#fff";
-    ctx.font = "20px Arial";
+    ctx.font = "12px Arial";
     ctx.fillText(post.text, post.position.x + 5, post.position.y + 25);
 }
 
@@ -115,8 +116,8 @@ async function createPost(text, color)
             y: 0
         },
         size: {
-            x: 150,
-            y: 150
+            x: 85,
+            y: 85
         },
         color: color
     }
