@@ -3,6 +3,13 @@ body {
     width: 100vw;
     height: 100vh;
 }
+.text {
+    font-size: 24px !important;
+    width: auto;
+    height: auto;
+    background: none;
+    color: #000;
+}
 .postit {
     padding: 10px;
     position: absolute;
@@ -118,4 +125,10 @@ body {
     padding: 10px;
     top: 50%;
     transform: translateY(-50%);
+}
+#buttons-type {
+    top: initial;
+    transform: translateY(0);
+    left: initial;
+    right: 10px;
 }

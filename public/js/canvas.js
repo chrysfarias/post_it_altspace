@@ -5,6 +5,9 @@ const colors = ["#1abc9c", "#2ecc71", "#3498db", "#9b59b6", "#34495e", "#f1c40f"
 var postits = []
 var selectedPost = null;
 var insertPostInputField = null;
+var buttonsType = null;
+var buttonPostit = null;
+var buttonText = null;
 
 jQuery(document).ready(function($){
     start();
@@ -13,6 +16,16 @@ jQuery(document).ready(function($){
             cancelAdd();
     });
     $("body").dblclick(addInput);
+    buttonsType = $("#buttons-type");
+    buttonsType.hide();
+    buttonPostit = $("#button-text");
+    buttonPostit.click(function(e) {
+        setSelectedItemType("text");
+    });
+    buttonText = $("#button-postit");
+    buttonText.click(function(e) {
+        setSelectedItemType("postit");
+    });
 });
 function hex(x) {
   return ("0" + parseInt(x).toString(16)).slice(-2);
@@ -89,6 +102,7 @@ function cancelAdd()
     insertPostInputField?.remove();
     selectedPost?.element.removeClass('selected')
     selectedPost = null
+    buttonsType.hide();
 }
 
 function start()
@@ -99,10 +113,7 @@ function start()
         alert("Section not found!!");
         return;
     }
-    //load trash image
     loadPosts();
-    // get saved post-its
-    //setInterval(loadPosts, 5000);
 }
 
 async function loadPosts()
@@ -125,7 +136,13 @@ async function loadPosts()
 function clear() {
     postits?.forEach(p => p.element?.remove());
 }
-
+function setSelectedItemType(type) {
+    selectedPost.type = type;
+    updatePost(selectedPost);
+    cancelAdd();
+    clear();
+    draw();
+}
 // redraw the scene
 function draw() {
     // redraw each rect in the rects[] array
@@ -137,9 +154,19 @@ function draw() {
         }).appendTo('body')
         r.element.attr("tabindex", 0);
         r.element.draggable();
-        r.element.css('background-color', r.color);
-        r.element.css('width', r.size.x);
-        r.element.css('height', r.size.y);
+
+        if (r.type == "postit")
+        {
+            r.element.css('background-color', r.color);
+            r.element.css('width', r.size.x);
+            r.element.css('height', r.size.y);
+        }
+        if (r.type == "text")
+        {
+            r.element.addClass("text");
+            r.element.css('color', r.color);
+        }
+
         r.element.css('left', r.position.x);
         r.element.css('top', r.position.y);
         r.element.on('dragstop', function(e) { updatePost(r); })
@@ -149,6 +176,10 @@ function draw() {
             selectedPost = r;
             selectedPost.element.addClass('selected');
             selectedPost.element.focus();
+
+            buttonsType.show();
+            buttonPostit.css("background-color", r.type=="text" ? "#3498db" : "#95a5a6");
+            buttonText.css("background-color", r.type=="postit" ? "#3498db" : "#95a5a6");
         });
         r.element.on('keydown', function(e) {
             const key = e.which || e.keyCode;
@@ -176,7 +207,8 @@ async function createPost(text, color, x, y, size)
             x: size,
             y: size
         },
-        color: color
+        color: color,
+        type: "postit"
     }
 
     const params = new URLSearchParams(window.location.search);
