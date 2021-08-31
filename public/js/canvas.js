@@ -1,6 +1,6 @@
 const api = "https://postitaltspace.herokuapp.com/api";
 //const api = "http://localhost:3000/api";
-const colors = ["#1abc9c", "#2ecc71", "#3498db", "#9b59b6", "#34495e", "#f1c40f", "#e67e22", "#e74c3c"]
+const colors = ["#1abc9c", "#2ecc71", "#3498db", "#9b59b6", "#34495e", "#f1c40f", "#e67e22", "#e74c3c", "#2d3436"]
 
 var postits = []
 var selectedPost = null;
