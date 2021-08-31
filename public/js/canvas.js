@@ -41,19 +41,46 @@ function addInput(e)
         text: 'Criar'
     }).appendTo(insertPostInputField);
     addButton.click(function(e) {
-        var color = rgb2hex(insertPostInputField.css( "background-color" ));
-        createPost(inputField.val(), color, x, y);
+        const position = insertPostInputField.position();
+        const size = insertPostInputField.width();
+        const color = rgb2hex(insertPostInputField.css( "background-color" ));
+        createPost(inputField.val(), color, position.left, position.top, size + 20);
     })
-    var buttons = $('<div/>', {}).appendTo(insertPostInputField);
+    var buttonsColor = $('<div/>', {
+        class: 'button-container'
+    }).appendTo(insertPostInputField);
+    var buttonsSize = $('<div/>', {
+        class: 'button-container-vertical'
+    }).appendTo(insertPostInputField);
 
     colors.forEach(color => {
         var button = $('<button/>', {
-            
-        }).appendTo(buttons);
+            class: 'button-item-container'
+        }).appendTo(buttonsColor);
         button.css("background-color", color);
         button.click(function(e){
             insertPostInputField.css("background-color", color);
         });
+    });
+
+    var plusButton = $('<button/>', {
+        text: '+',
+        class: 'button-item-container'
+    }).appendTo(buttonsSize);
+    plusButton.click(function(e){
+        const size = insertPostInputField.width() + 60;
+        insertPostInputField.css("width", size + 'px');
+        insertPostInputField.css("height", size + 'px');
+    });
+
+    var minusButton = $('<button/>', {
+        text: '-',
+        class: 'button-item-container'
+    }).appendTo(buttonsSize);
+    minusButton.click(function(e){
+        const size = insertPostInputField.width() - 5;
+        insertPostInputField.css("width", size);
+        insertPostInputField.css("height", size);
     });
 }
 
@@ -137,7 +164,7 @@ function draw() {
 }
 
 
-async function createPost(text, color, x, y)
+async function createPost(text, color, x, y, size)
 {
     var post = {
         text: text,
@@ -146,8 +173,8 @@ async function createPost(text, color, x, y)
             y
         },
         size: {
-            x: 85,
-            y: 85
+            x: size,
+            y: size
         },
         color: color
     }

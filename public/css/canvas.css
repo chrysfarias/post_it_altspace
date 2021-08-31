@@ -41,13 +41,17 @@ body {
 }
 .selected:after {
     opacity: 1;
-    border: 3px solid #0080ff;
+    border: 3px solid #3498db;
     transition: all ease .1s;
 }
 .input-post {
     position: relative;
-    width: 80px;
-    height: 80px;
+    max-width: 300px;
+    max-height: 300px;
+    min-width: 40px;
+    min-height: 40px;
+    width: 85px;
+    height: 85px;
     display: flex;
     border-radius: 4px;
     padding: 10px;
@@ -56,6 +60,8 @@ body {
 }
 .input-post > textarea {
     border: none;
+    width: 100%;
+    height: 100%;
     background: none;
     outline: none;
     color: #fff;
@@ -63,6 +69,7 @@ body {
     font-size: 10px;
     overflow: hidden;
     word-wrap: break-word;
+    resize: none;
 }
 .input-post > button {
     position: absolute;
@@ -76,7 +83,7 @@ body {
     border-radius: 5px;
     background-color: #2ecc71;
 }
-.input-post > div {
+.button-container {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -88,10 +95,27 @@ body {
     left: 50%;
     transform: translateX(-50%);
 }
-.input-post > div > button {
+.button-item-container {
     width: 20px;
     margin: 2px;
     height: 20px;
     border: none;
     cursor: pointer;
+    background: #95a5a6;
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+.button-container-vertical {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    flex-direction: column;
+    height: 150px;
+    position: absolute;
+    left: -40px;
+    padding: 10px;
+    top: 50%;
+    transform: translateY(-50%);
 }
