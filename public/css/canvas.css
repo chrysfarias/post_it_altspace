@@ -10,6 +10,7 @@ body {
     border-radius: 4px;
     color: #fff;
     font-family: cursive;
+    font-size: 10px;
     cursor: pointer;
     transform: scale(1);
     transition: opacity ease .4s, all ease-out .1s, transform ease .4s;
@@ -59,6 +60,9 @@ body {
     outline: none;
     color: #fff;
     font-family: cursive;
+    font-size: 10px;
+    overflow: hidden;
+    word-wrap: break-word;
 }
 .input-post > button {
     position: absolute;
