@@ -23,6 +23,7 @@ body {
     transition: opacity ease .4s, all ease-out .1s, transform ease .4s;
     transform-style: preserve-3d;
     user-select: none;
+    word-wrap: break-word;
 }
 .postit:hover {
     transition: opacity ease .2s;
