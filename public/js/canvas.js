@@ -8,6 +8,7 @@ var insertPostInputField = null;
 var buttonsType = null;
 var buttonPostit = null;
 var buttonText = null;
+var updatingPost = false;
 
 jQuery(document).ready(function($){
     start();
@@ -15,7 +16,10 @@ jQuery(document).ready(function($){
         if (e.target.nodeName === "BODY")
             cancelAdd();
     });
-    $("body").dblclick(addInput);
+    $("body").dblclick(function(e) {
+        if (e.target.nodeName === "BODY")
+            addInput(e, this);
+    });
     buttonsType = $("#buttons-type");
     buttonsType.hide();
     buttonPostit = $("#button-text");
@@ -34,11 +38,30 @@ function rgb2hex(rgb) {
  rgb = rgb.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(,\s*\d+\.*\d+)?\)$/);
  return "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
 }
-function addInput(e)
+function addInput(e, el)
 {
-    var x = e.pageX - this.offsetLeft;
-    var y = e.pageY - this.offsetTop;
+    if (updatingPost == true)
+        return;
     cancelAdd();
+
+    var x = 0;
+    var y = 0;
+    var hasPost = false;
+
+    if (e.target?.nodeName === "BODY")
+    {
+        x = e.pageX - el.offsetLeft;
+        y = e.pageY - el.offsetTop;
+    }
+    else //'e' as post
+    {
+        x = e.position.x;
+        y = e.position.y;
+        hasPost = true;
+        updatingPost = true;
+        e.element.hide();
+    }
+        
     insertPostInputField = $('<div/>',{
         class: 'input-post'
     }).appendTo('body')
@@ -46,26 +69,49 @@ function addInput(e)
     insertPostInputField.draggable();
 
     var inputField = $('<textarea/>', {
-
+        class: 'title-field'
     }).appendTo(insertPostInputField);
     inputField.focus();
 
-    var addButton = $('<button/>', {
-        text: 'Criar'
+    var inputFieldDescription = $('<textarea/>', {
+        class: 'description-field',
+        placeholder: 'Postit Description',
+        rows: 5
     }).appendTo(insertPostInputField);
-    addButton.click(function(e) {
+
+    if (hasPost)
+    {
+        insertPostInputField.css( "background-color", e.element.css("background-color") );
+        inputField.val(e.text);
+        inputFieldDescription.val(e.description);
+    }
+
+    var addButton = $('<button/>', {
+        text: hasPost ? 'Atualizar' : 'Criar'
+    }).appendTo(insertPostInputField);
+    addButton.click(function(evnt) {
         const position = insertPostInputField.position();
         const size = insertPostInputField.width();
         const color = rgb2hex(insertPostInputField.css( "background-color" ));
-        createPost(inputField.val(), color, position.left, position.top, size + 20);
+        const description = inputFieldDescription.val();
+
+        if (hasPost)
+        {
+            e.description = description;
+            e.element.css('background-color', color);
+            e.element.css({top: position.top, left: position.left});
+            e.element.text(inputField.val());
+            e.element.show();
+            updatePost(e);
+        }
+        else
+        {
+            createPost(inputField.val(), description, color, position.left, position.top, size + 20);
+        }
     })
     var buttonsColor = $('<div/>', {
         class: 'button-container'
     }).appendTo(insertPostInputField);
-    var buttonsSize = $('<div/>', {
-        class: 'button-container-vertical'
-    }).appendTo(insertPostInputField);
-
     colors.forEach(color => {
         var button = $('<button/>', {
             class: 'button-item-container'
@@ -75,6 +121,10 @@ function addInput(e)
             insertPostInputField.css("background-color", color);
         });
     });
+
+    /*var buttonsSize = $('<div/>', {
+        class: 'button-container-vertical'
+    }).appendTo(insertPostInputField);
 
     var plusButton = $('<button/>', {
         text: '+',
@@ -94,15 +144,19 @@ function addInput(e)
         const size = insertPostInputField.width() - 5;
         insertPostInputField.css("width", size);
         insertPostInputField.css("height", size);
-    });
+    });*/
 }
 
 function cancelAdd()
 {
+    if (updatingPost == true)
+        return;
+
     insertPostInputField?.remove();
     selectedPost?.element.removeClass('selected')
     selectedPost = null
     buttonsType.hide();
+    updatingPost = false;
 }
 
 function start()
@@ -181,6 +235,9 @@ function draw() {
             buttonPostit.css("background-color", r.type=="text" ? "#3498db" : "#95a5a6");
             buttonText.css("background-color", r.type=="postit" ? "#3498db" : "#95a5a6");
         });
+        r.element.on('dblclick', function(e) {
+            addInput(r);
+        });
         r.element.on('keydown', function(e) {
             const key = e.which || e.keyCode;
             if (selectedPost != r)
@@ -195,10 +252,11 @@ function draw() {
 }
 
 
-async function createPost(text, color, x, y, size)
+async function createPost(text, description, color, x, y, size)
 {
     var post = {
         text: text,
+        description: description,
         position: {
             x,
             y
@@ -232,10 +290,13 @@ async function updatePost(post) {
     const params = new URLSearchParams(window.location.search);
     const section = params.get("section");
     const position = post.element.position();
+    const color = rgb2hex(post.element.css( "background-color" ));
     post.position = {
         x: position.left,
         y: position.top
     }
+    post.text = post.element.text();
+    post.color = color;
     const rawResponse = await fetch(`${api}/post/${post.id}?section=${section}`, {
         method: 'PUT',
         headers: {
@@ -245,6 +306,8 @@ async function updatePost(post) {
         body: JSON.stringify(post)
     });
     console.log("Atualizado!");
+    updatingPost = false;
+    cancelAdd();
 }
 
 async function deletePost(post) {

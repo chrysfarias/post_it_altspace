@@ -65,7 +65,7 @@ body {
     box-sizing: border-box;
     background-color: #3498db;
 }
-.input-post > textarea {
+.input-post > .title-field {
     border: none;
     width: 100%;
     height: 100%;
@@ -77,6 +77,11 @@ body {
     overflow: hidden;
     word-wrap: break-word;
     resize: none;
+}
+.input-post > .description-field {
+    position: absolute;
+    left: 100px;
+    top: 0px;
 }
 .input-post > button {
     position: absolute;
